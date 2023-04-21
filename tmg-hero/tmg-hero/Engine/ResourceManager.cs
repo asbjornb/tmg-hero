@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using tmg_hero.Model;
 
 namespace tmg_hero.Engine;
 
@@ -13,9 +14,9 @@ internal class ResourceManager
         _page = page;
     }
 
-    public async Task<Dictionary<string, (int current, int max, double income)>> GetResourceDataAsync()
+    public async Task<Dictionary<string, Resource>> GetResourceDataAsync()
     {
-        var resourceData = new Dictionary<string, (int current, int max, double income)>();
+        var resourceData = new Dictionary<string, Resource>();
 
         // Locate the elements containing the resource information
         var root = _page.Locator("#root div");
@@ -35,8 +36,9 @@ internal class ResourceManager
                 int current = int.Parse(match.Groups[2].Value.Replace(",", ""));
                 int max = int.Parse(match.Groups[3].Value.Replace(",", ""));
                 double income = double.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
+                var resource = new Resource(name, current, max, income);
 
-                resourceData[name] = (current, max, income);
+                resourceData[name] = resource;
             }
         }
 
