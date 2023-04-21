@@ -41,12 +41,16 @@ internal class BuildingManager
 
             // Get the Tippy.js tooltip text
             var tooltipElement = await _page.QuerySelectorAsync("[data-tippy-root]");
-            var tooltipText = await tooltipElement?.InnerTextAsync();
-            
+            if (tooltipElement == null)
+            {
+                continue;
+            }
+            var tooltipText = await tooltipElement!.InnerTextAsync();
+
             if (!string.IsNullOrEmpty(tooltipText))
             {
                 // Parse the building data from the tooltip text
-                var building = Building.TryParseBuildingFromTooltipText(tooltipText);
+                var building = Building.TryParseBuildingFromTooltipText(tooltipText, button);
                 if (building != null)
                 {
                     buildings.Add(building);

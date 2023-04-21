@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Microsoft.Playwright;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace tmg_hero.Model;
@@ -6,20 +7,23 @@ namespace tmg_hero.Model;
 //Currently simplistic building model. No supported roles, cap increases or bonuses modelled
 public sealed class Building
 {
+    private readonly ILocator? _button;
+
     public string Name { get; }
     public Dictionary<string, int> Cost { get; }
     public Dictionary<string, double> Production { get; }
     public int? Population { get; }
 
-    private Building(string name, Dictionary<string, int> cost, Dictionary<string, double> production, int? population)
+    private Building(string name, Dictionary<string, int> cost, Dictionary<string, double> production, int? population, ILocator? button)
     {
         Name = name;
         Cost = cost;
         Production = production;
         Population = population;
+        _button = button;
     }
 
-    public static Building? TryParseBuildingFromTooltipText(string tooltipText)
+    public static Building? TryParseBuildingFromTooltipText(string tooltipText, ILocator? button)
     {
         try
         {
@@ -30,7 +34,7 @@ public sealed class Building
             var name = lines[0].Trim();
 
             // Parse the cost, production, and population values from the remaining lines
-            var resourcePattern = @"(\w+)\s*([\+\-]?\d+(?:\.\d+)?)(?:\/s)?";
+            const string resourcePattern = @"(\w+)\s*([\+\-]?\d+(?:\.\d+)?)(?:\/s)?";
             int? population = default;
             var cost = new Dictionary<string, int>();
             var production = new Dictionary<string, double>();
@@ -58,7 +62,7 @@ public sealed class Building
                 }
             }
 
-            return new Building(name, cost, production, population);
+            return new Building(name, cost, production, population, button);
         }
         catch(Exception e)
         {
@@ -85,5 +89,21 @@ public sealed class Building
         }
 
         return costResources;
+    }
+
+    public async Task Buy()
+    {
+        if(_button is not null)
+        {
+            try
+            {
+                await _button.ClickAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to click Button for building {Name} with error {e}");
+                throw;
+            }
+        }
     }
 }
