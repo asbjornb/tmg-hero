@@ -37,10 +37,10 @@ public class GameController
                 _isPlaying = false;
                 break;
             }
-            var stopsatch = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
             var resources = await resourceManager.GetResourceDataAsync();
             var buildings = await buildingManager.GetBuildingDataAsync();
-            Console.WriteLine($"Reading gamestate took {stopsatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"Reading gamestate took {stopwatch.ElapsedMilliseconds}ms");
             //If any resources are at cap build any building we can afford that uses that resource
             var cappedResources = resources.Values.Where(r => r.IsCapped);
             foreach(var resource in cappedResources)
