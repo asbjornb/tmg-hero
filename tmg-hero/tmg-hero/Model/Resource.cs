@@ -11,7 +11,7 @@ internal class Resource
     }
 
     public string Name { get; }
-    public int Amount { get; }
+    public int Amount { get; set; }
     public int Cap { get; }
     public double Income { get; }
 

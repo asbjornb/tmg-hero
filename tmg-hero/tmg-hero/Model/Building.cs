@@ -34,10 +34,12 @@ public sealed class Building
             var name = lines[0].Trim();
 
             // Parse the cost, production, and population values from the remaining lines
-            const string resourcePattern = @"(\w+)\s*([\+\-]?\d+(?:\.\d+)?)(?:\/s)?";
+            const string resourcePattern = @"(\w+)\s*((?<=\+|\-)[\d]+(?:\.\d+)?)(?:\/s)?";
             int? population = default;
             var cost = new Dictionary<string, int>();
             var production = new Dictionary<string, double>();
+
+            bool isCost = true;
 
             foreach (var line in lines.Skip(1))
             {
@@ -50,12 +52,13 @@ public sealed class Building
                     if (line.Contains("/s"))
                     {
                         production[resourceName] = value;
+                        isCost = false;
                     }
                     else if (resourceName == "Population")
                     {
                         population = (int)value;
                     }
-                    else
+                    else if (isCost)
                     {
                         cost[resourceName] = (int)value;
                     }
@@ -64,19 +67,20 @@ public sealed class Building
 
             return new Building(name, cost, production, population, button);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine($"Failed to parse building with error {e}");
             return null;
         }
     }
 
+
     public bool IsHousing()
     {
         return Population.HasValue;
     }
 
-    public List<(string resource, int amount)> CostResources()
+    public List<(string resource, int amount)> NegativeIncomes()
     {
         var costResources = new List<(string resource, int amount)>();
 

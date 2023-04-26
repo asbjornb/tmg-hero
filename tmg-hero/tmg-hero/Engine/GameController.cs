@@ -42,9 +42,24 @@ public class GameController
             var buildings = await buildingManager.GetBuildingDataAsync();
             Console.WriteLine($"Reading gamestate took {stopsatch.ElapsedMilliseconds}ms");
             //If any resources are at cap build any building we can afford that uses that resource
+            var cappedResources = resources.Values.Where(r => r.IsCapped);
+            foreach(var resource in cappedResources)
+            {
+                var buildingsThatLowerCap = buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
+                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => resources[c.Key].Amount >= c.Value));
+                var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => resources[n.resource].Income + n.amount >= 0));
+                var first = doesNotGiveNegativeTotalIncome.FirstOrDefault();
+                if(first != default)
+                {
+                    await first.Buy();
+                    foreach (var cost in first.Cost)
+                    {
+                        resources[cost.Key].Amount -= cost.Value;
+                    }
+                    break;
+                }
+            }
 
-            var resource = resources["Wood"];
-            await _page!.ClickAsync("text=Artisan Workshop");
             await Task.Delay(1000, cancellationToken); // Adjust this value to set the interval between interactions
         }
     }
