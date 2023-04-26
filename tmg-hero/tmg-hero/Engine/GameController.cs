@@ -4,7 +4,7 @@ using tmg_hero.Dialogs;
 
 namespace tmg_hero.Engine;
 
-public class GameController
+internal class GameController
 {
     private const string Url = "https://www.theresmoregame.com/play/";
     private bool _isPlaying;
