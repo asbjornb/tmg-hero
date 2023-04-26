@@ -48,7 +48,8 @@ public class GameController
                 var buildingsThatLowerCap = buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
                 var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => resources[c.Key].Amount >= c.Value));
                 var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => resources[n.resource].Income + n.amount >= 0));
-                var first = doesNotGiveNegativeTotalIncome.FirstOrDefault();
+                //Take a random that is not null
+                var first = doesNotGiveNegativeTotalIncome.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
                 if(first != default)
                 {
                     await first.Buy();
