@@ -2,7 +2,7 @@
 
 internal static class LoadFromSaveDialog
 {
-    public static void ShowLoadFromSaveDialog(Func<string, Task> injectSaveFunction)
+    public static Task ShowLoadFromSaveDialog(Func<string, Task> injectSaveFunction)
     {
         // Create a new form that will serve as the dialog window
         var inputForm = new Form
@@ -40,9 +40,13 @@ internal static class LoadFromSaveDialog
             Top = 110,
             DialogResult = DialogResult.OK
         };
+
+        var tcs = new TaskCompletionSource<bool>();
+
         okButton.Click += async (s, a) =>
         {
             await injectSaveFunction(textBox.Text);
+            tcs.SetResult(true);
             inputForm.Close();
         };
         inputForm.Controls.Add(okButton);
@@ -61,5 +65,6 @@ internal static class LoadFromSaveDialog
         inputForm.AcceptButton = okButton;
         inputForm.CancelButton = cancelButton;
         inputForm.ShowDialog();
+        return tcs.Task;
     }
 }

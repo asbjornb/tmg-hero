@@ -23,7 +23,7 @@ internal class GameController
         if (_page is null)
         {
             //Display a dialog telling to import save before playing, then return
-            LoadFromSaveDialog.ShowLoadFromSaveDialog(InjectSaveGameData);
+            await LoadFromSaveDialog.ShowLoadFromSaveDialog(InjectSaveGameData);
         }
         _isPlaying = true;
 
@@ -89,6 +89,7 @@ internal class GameController
         await _page.Keyboard.DownAsync("Control");
         await _page.Keyboard.PressAsync("KeyV");
         await _page.Keyboard.UpAsync("Control");
+        //await _page.WaitForSelectorAsync("button[role='tab'][aria-label='Build']");
     }
 
     public void StopPlaying()

@@ -1,7 +1,4 @@
 ﻿using Microsoft.Playwright;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using tmg_hero.Model;
 
 namespace tmg_hero.Engine;
