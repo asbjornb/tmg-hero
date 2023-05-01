@@ -27,9 +27,6 @@ internal class GameController
         }
         _isPlaying = true;
 
-        var resourceManager = new ResourceManager(_page!);
-        var buildingManager = new BuildingManager(_page!);
-
         while (_isPlaying)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -37,17 +34,19 @@ internal class GameController
                 _isPlaying = false;
                 break;
             }
+
+            var gameState = new GameState(_page!);
+            await gameState.Initialize();
+
             var stopwatch = Stopwatch.StartNew();
-            var resources = await resourceManager.GetResourceDataAsync();
-            var buildings = await buildingManager.GetBuildingDataAsync();
             Console.WriteLine($"Reading gamestate took {stopwatch.ElapsedMilliseconds}ms");
             //If any resources are at cap build any building we can afford that uses that resource
-            var cappedResources = resources.Values.Where(r => r.IsCapped);
+            var cappedResources = gameState.Resources.Values.Where(r => r.IsCapped);
             foreach(var resource in cappedResources)
             {
-                var buildingsThatLowerCap = buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
-                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => resources[c.Key].Amount >= c.Value));
-                var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => resources[n.resource].Income + n.amount >= 0));
+                var buildingsThatLowerCap = gameState.Buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
+                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => gameState.Resources[c.Key].Amount >= c.Value));
+                var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => gameState.Resources[n.resource].Income + n.amount >= 0));
                 //Take a random that is not null
                 var first = doesNotGiveNegativeTotalIncome.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
                 if(first != default)
@@ -55,7 +54,7 @@ internal class GameController
                     await first.Buy();
                     foreach (var cost in first.Cost)
                     {
-                        resources[cost.Key].Amount -= cost.Value;
+                        gameState.Resources[cost.Key].Amount -= cost.Value;
                     }
                     break;
                 }
