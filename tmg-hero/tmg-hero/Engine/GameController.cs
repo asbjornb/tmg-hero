@@ -72,26 +72,10 @@ internal class GameController
         }
         try
         {
-            await _page.WaitForLoadStateAsync(options: new() { Timeout = 5000 });
+            var buttonLocator = _page.GetByRole(AriaRole.Tab).GetByText("Build");
+            var buttonCount = await buttonLocator.CountAsync();
 
-            int maxAttempts = 10;
-            int attempt = 0;
-
-            while (attempt < maxAttempts)
-            {
-                var buttonLocator = _page.GetByRole(AriaRole.Tab).GetByText("Build");
-                var buttonCount = await buttonLocator.CountAsync();
-
-                if (buttonCount == 1)
-                {
-                    return true;
-                }
-
-                await Task.Delay(500);
-                attempt++;
-            }
-
-            return false;
+            return buttonCount == 1;
         }
         catch (TimeoutException)
         {
@@ -123,7 +107,10 @@ internal class GameController
 
         await _page.Keyboard.DownAsync("Control");
         await _page.Keyboard.PressAsync("KeyV");
-        await _page.Keyboard.UpAsync("Control");
+        var upKey = _page.Keyboard.UpAsync("Control");
+        await _page.WaitForSelectorAsync("text=The game has been loaded from the save, please wait");
+        await upKey;
+        await _page.WaitForNavigationAsync();
     }
 
     public void StopPlaying()
