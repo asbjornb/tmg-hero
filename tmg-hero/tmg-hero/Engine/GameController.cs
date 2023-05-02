@@ -45,7 +45,7 @@ internal class GameController
             foreach(var resource in cappedResources)
             {
                 var buildingsThatLowerCap = gameState.Buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
-                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => gameState.Resources[c.Key].Amount >= c.Value));
+                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => gameState.Resources.ContainsKey(c.Key) && gameState.Resources[c.Key].Amount >= c.Value));
                 var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => gameState.Resources[n.resource].Income + n.amount >= 0));
                 //Take a random that is not null
                 var first = doesNotGiveNegativeTotalIncome.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
@@ -110,7 +110,9 @@ internal class GameController
         var upKey = _page.Keyboard.UpAsync("Control");
         await _page.WaitForSelectorAsync("text=The game has been loaded from the save, please wait");
         await upKey;
+#pragma warning disable CS0612 // Type or member is obsolete
         await _page.WaitForNavigationAsync();
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 
     public void StopPlaying()

@@ -43,24 +43,29 @@ internal sealed class Building
 
             foreach (var line in lines.Skip(1))
             {
+                if (line.Contains("Population"))
+                {
+                    population = int.Parse(line.Split("\t").Last());
+                    continue;
+                }
+                if (line.Contains("/s") || line.Contains("%") || line.Contains("+"))
+                {
+                    isCost = false;
+                }
+
                 var match = Regex.Match(line, resourcePattern);
                 if (match.Success)
                 {
                     string resourceName = match.Groups[1].Value;
                     double value = double.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
 
-                    if (line.Contains("/s"))
-                    {
-                        production[resourceName] = value;
-                        isCost = false;
-                    }
-                    else if (resourceName == "Population")
-                    {
-                        population = (int)value;
-                    }
-                    else if (isCost)
+                    if (isCost)
                     {
                         cost[resourceName] = (int)value;
+                    }
+                    else if (line.Contains("/s"))
+                    {
+                        production[resourceName] = value;
                     }
                 }
             }
