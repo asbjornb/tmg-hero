@@ -23,7 +23,7 @@ internal class GameController
         if (_page is null)
         {
             //Display a dialog telling to import save before playing, then return
-            await LoadFromSaveDialog.ShowLoadFromSaveDialog(InjectSaveGameData);
+            await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => InjectSaveGameData(x));
         }
         _isPlaying = true;
 
@@ -45,7 +45,7 @@ internal class GameController
             foreach(var resource in cappedResources)
             {
                 var buildingsThatLowerCap = gameState.Buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
-                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => gameState.Resources[c.Key].Amount >= c.Value));
+                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => gameState.Resources.ContainsKey(c.Key) && gameState.Resources[c.Key].Amount >= c.Value));
                 var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => gameState.Resources[n.resource].Income + n.amount >= 0));
                 //Take a random that is not null
                 var first = doesNotGiveNegativeTotalIncome.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
@@ -60,17 +60,36 @@ internal class GameController
                 }
             }
 
-            await Task.Delay(1000, cancellationToken); // Adjust this value to set the interval between interactions
+            await Task.Delay(1000, cancellationToken);
         }
     }
 
-    public async Task InjectSaveGameData(string saveData)
+    public async Task<bool> IsGameLoaded()
+    {
+        if (_page is null)
+        {
+            return false;
+        }
+        try
+        {
+            var buttonLocator = _page.GetByRole(AriaRole.Tab).GetByText("Build");
+            var buttonCount = await buttonLocator.CountAsync();
+
+            return buttonCount == 1;
+        }
+        catch (TimeoutException)
+        {
+            return false;
+        }
+    }
+
+    public async Task InjectSaveGameData(string saveData, bool headless = false)
     {
         // Initialize a new Playwright instance if not already initialized
         if (_browser == null)
         {
             _playwright = await Playwright.CreateAsync();
-            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
+            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = headless });
         }
 
         _browserContext ??= await _browser.NewContextAsync();
@@ -88,7 +107,12 @@ internal class GameController
 
         await _page.Keyboard.DownAsync("Control");
         await _page.Keyboard.PressAsync("KeyV");
-        await _page.Keyboard.UpAsync("Control");
+        var upKey = _page.Keyboard.UpAsync("Control");
+        await _page.WaitForSelectorAsync("text=The game has been loaded from the save, please wait");
+        await upKey;
+#pragma warning disable CS0612 // Type or member is obsolete
+        await _page.WaitForNavigationAsync();
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 
     public void StopPlaying()

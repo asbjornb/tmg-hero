@@ -1,5 +1,3 @@
-using Microsoft.Playwright;
-using System.Threading;
 using tmg_hero.Dialogs;
 using tmg_hero.Engine;
 
@@ -10,8 +8,7 @@ namespace tmg_hero;
 
 public partial class Control : Form
 {
-    private const string Url = "https://www.theresmoregame.com/play/";
-    private GameController _gameController;
+    private readonly GameController _gameController;
     private CancellationTokenSource? _cancellationTokenSource;
 
     public Control()
@@ -22,7 +19,7 @@ public partial class Control : Form
 
     private async void PlayStop_Click(object sender, EventArgs e)
     {
-        if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
+        if (_cancellationTokenSource?.IsCancellationRequested == false)
         {
             _cancellationTokenSource.Cancel();
             _gameController.StopPlaying();
@@ -36,6 +33,6 @@ public partial class Control : Form
 
     private void LoadSave_Click(object sender, EventArgs e)
     {
-        LoadFromSaveDialog.ShowLoadFromSaveDialog(_gameController.InjectSaveGameData);
+        LoadFromSaveDialog.ShowLoadFromSaveDialog(x => _gameController.InjectSaveGameData(x));
     }
 }
