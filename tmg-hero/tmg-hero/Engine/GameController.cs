@@ -23,7 +23,7 @@ internal class GameController
         if (_page is null)
         {
             //Display a dialog telling to import save before playing, then return
-            await LoadFromSaveDialog.ShowLoadFromSaveDialog(InjectSaveGameData);
+            await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => InjectSaveGameData(x));
         }
         _isPlaying = true;
 
@@ -60,17 +60,52 @@ internal class GameController
                 }
             }
 
-            await Task.Delay(1000, cancellationToken); // Adjust this value to set the interval between interactions
+            await Task.Delay(1000, cancellationToken);
         }
     }
 
-    public async Task InjectSaveGameData(string saveData)
+    public async Task<bool> IsGameLoaded()
+    {
+        if (_page is null)
+        {
+            return false;
+        }
+        try
+        {
+            await _page.WaitForLoadStateAsync(options: new() { Timeout = 5000 });
+
+            int maxAttempts = 10;
+            int attempt = 0;
+
+            while (attempt < maxAttempts)
+            {
+                var buttonLocator = _page.GetByRole(AriaRole.Tab).GetByText("Build");
+                var buttonCount = await buttonLocator.CountAsync();
+
+                if (buttonCount == 1)
+                {
+                    return true;
+                }
+
+                await Task.Delay(500);
+                attempt++;
+            }
+
+            return false;
+        }
+        catch (TimeoutException)
+        {
+            return false;
+        }
+    }
+
+    public async Task InjectSaveGameData(string saveData, bool headless = false)
     {
         // Initialize a new Playwright instance if not already initialized
         if (_browser == null)
         {
             _playwright = await Playwright.CreateAsync();
-            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
+            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = headless });
         }
 
         _browserContext ??= await _browser.NewContextAsync();
