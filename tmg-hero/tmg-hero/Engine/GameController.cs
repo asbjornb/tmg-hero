@@ -11,7 +11,7 @@ internal class GameController
     private IPlaywright? _playwright;
     private IBrowser? _browser;
     private IBrowserContext? _browserContext;
-    private IPage? _page;
+    public IPage? Page { get; private set; }
 
     public GameController()
     {
@@ -20,7 +20,7 @@ internal class GameController
 
     public async Task PlayGameAsync(CancellationToken cancellationToken)
     {
-        if (_page is null)
+        if (Page is null)
         {
             //Display a dialog telling to import save before playing, then return
             await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => InjectSaveGameData(x));
@@ -35,7 +35,7 @@ internal class GameController
                 break;
             }
 
-            var gameState = new GameState(_page!);
+            var gameState = new GameState(Page!);
             await gameState.Initialize();
 
             var stopwatch = Stopwatch.StartNew();
@@ -56,6 +56,7 @@ internal class GameController
                     {
                         gameState.Resources[cost.Key].Amount -= cost.Value;
                     }
+                    await DismissPopupAsync();
                     break;
                 }
             }
@@ -66,13 +67,13 @@ internal class GameController
 
     public async Task<bool> IsGameLoaded()
     {
-        if (_page is null)
+        if (Page is null)
         {
             return false;
         }
         try
         {
-            var buttonLocator = _page.GetByRole(AriaRole.Tab).GetByText("Build");
+            var buttonLocator = Page.GetByRole(AriaRole.Tab).GetByText("Build");
             var buttonCount = await buttonLocator.CountAsync();
 
             return buttonCount == 1;
@@ -81,6 +82,14 @@ internal class GameController
         {
             return false;
         }
+    }
+
+    public async Task DismissPopupAsync()
+    {
+        var locator = Page!.GetByRole(AriaRole.Button).GetByText("Close");
+        await locator.ClickAsync();
+        //Closing is fluent and takes a while, so wait for it to be gone
+        await Task.Delay(500);
     }
 
     public async Task InjectSaveGameData(string saveData, bool headless = false)
@@ -93,25 +102,25 @@ internal class GameController
         }
 
         _browserContext ??= await _browser.NewContextAsync();
-        _page ??= await _browserContext.NewPageAsync();
+        Page ??= await _browserContext.NewPageAsync();
 
-        await _page.GotoAsync(Url);
-        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        await Page.GotoAsync(Url);
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
-        await _page.GetByRole(AriaRole.Banner).GetByRole(AriaRole.Button).Nth(3).ClickAsync();
+        await Page.GetByRole(AriaRole.Banner).GetByRole(AriaRole.Button).Nth(3).ClickAsync();
 
-        await _page.ClickAsync("text=Import from clipboard");
+        await Page.ClickAsync("text=Import from clipboard");
 
-        await _page.ClickAsync("text=Click here to paste a save");
+        await Page.ClickAsync("text=Click here to paste a save");
         Clipboard.SetText(saveData);
 
-        await _page.Keyboard.DownAsync("Control");
-        await _page.Keyboard.PressAsync("KeyV");
-        var upKey = _page.Keyboard.UpAsync("Control");
-        await _page.WaitForSelectorAsync("text=The game has been loaded from the save, please wait");
+        await Page.Keyboard.DownAsync("Control");
+        await Page.Keyboard.PressAsync("KeyV");
+        var upKey = Page.Keyboard.UpAsync("Control");
+        await Page.WaitForSelectorAsync("text=The game has been loaded from the save, please wait");
         await upKey;
 #pragma warning disable CS0612 // Type or member is obsolete
-        await _page.WaitForNavigationAsync();
+        await Page.WaitForNavigationAsync();
 #pragma warning restore CS0612 // Type or member is obsolete
     }
 
