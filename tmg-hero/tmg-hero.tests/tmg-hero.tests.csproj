@@ -24,4 +24,10 @@
     <ProjectReference Include="..\tmg-hero\tmg-hero.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestSaves\5Mines.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

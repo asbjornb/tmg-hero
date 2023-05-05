@@ -107,6 +107,8 @@ internal sealed class Building
             try
             {
                 await _button.ClickAsync();
+                //Buildings and research takes 2 seconds to complete
+                await Task.Delay(2500);
             }
             catch (Exception e)
             {
