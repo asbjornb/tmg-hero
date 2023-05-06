@@ -4,7 +4,7 @@ using tmg_hero.Dialogs;
 
 namespace tmg_hero.Engine;
 
-internal class GameController
+internal class GameController : IDisposable
 {
     private const string Url = "https://www.theresmoregame.com/play/";
     private bool _isPlaying;
@@ -86,11 +86,13 @@ internal class GameController
 
     public async Task DismissPopupAsync()
     {
-        var locator = Page!.GetByRole(AriaRole.Button).GetByText("Close");
-        if(await locator.CountAsync() > 0)
+        var portalRootLocator = Page!.Locator("#headlessui-portal-root");
+        var closeBtnLocator = portalRootLocator.GetByRole(AriaRole.Button).GetByText("Close");
+
+        if (await closeBtnLocator.CountAsync() > 0)
         {
-            await locator.ClickAsync();
-            //Closing is fluent and takes a while, so wait for it to be gone
+            await closeBtnLocator.ClickAsync(); // Click the "Close" button found in the headlessui-portal-root subtree
+            // Closing is fluent and takes a while, so wait for it to be gone
             await Task.Delay(500);
         }
     }
@@ -130,5 +132,11 @@ internal class GameController
     public void StopPlaying()
     {
         _isPlaying = false;
+    }
+
+    public void Dispose()
+    {
+        //await dispose
+        _browser?.DisposeAsync().GetAwaiter().GetResult();
     }
 }
