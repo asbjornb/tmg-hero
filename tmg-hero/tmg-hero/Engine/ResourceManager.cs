@@ -1,6 +1,4 @@
 ﻿using Microsoft.Playwright;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using tmg_hero.Model;
 
 namespace tmg_hero.Engine;
@@ -25,24 +23,18 @@ internal class ResourceManager
         // Get the inner text of the resource element
         string text = await resourceElement.InnerTextAsync();
 
-        // Use regular expressions to extract the resource data
-        var matches = Regex.Matches(text, @"(\w+)(?=\s*\d+)\s*(\d+(?:,\d+)?)(?:(?:\s*/\s*)?(\d+(?:,\d+)?))?\s*(\d+(?:\.\d+)?)/s");
-
-        foreach (Match match in matches)
+        foreach (var line in text.Split("\n"))
         {
-            if (match.Success && match.Groups.Count == 5)
+            if (Resource.TryParseResourceFromText(line, out var resource))
             {
-                string name = match.Groups[1].Value;
-                int current = int.Parse(match.Groups[2].Value.Replace(",", ""));
-                int max = int.Parse(match.Groups[3].Value.Replace(",", ""));
-                double income = double.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture);
-                var resource = new Resource(name, current, max, income);
-
-                resourceData[name] = resource;
+                resourceData[resource!.Name] = resource;
+            }
+            else
+            {
+                Console.WriteLine($"Failed to parse resource from text: {line}");
             }
         }
 
         return resourceData;
     }
-
 }
