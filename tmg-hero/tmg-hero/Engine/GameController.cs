@@ -87,9 +87,12 @@ internal class GameController
     public async Task DismissPopupAsync()
     {
         var locator = Page!.GetByRole(AriaRole.Button).GetByText("Close");
-        await locator.ClickAsync();
-        //Closing is fluent and takes a while, so wait for it to be gone
-        await Task.Delay(500);
+        if(await locator.CountAsync() > 0)
+        {
+            await locator.ClickAsync();
+            //Closing is fluent and takes a while, so wait for it to be gone
+            await Task.Delay(500);
+        }
     }
 
     public async Task InjectSaveGameData(string saveData, bool headless = false)
