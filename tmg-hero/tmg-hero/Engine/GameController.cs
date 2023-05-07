@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using System.Diagnostics;
 using tmg_hero.Dialogs;
+using tmg_hero.Strategies;
 
 namespace tmg_hero.Engine;
 
@@ -11,11 +12,13 @@ internal class GameController : IDisposable
     private IPlaywright? _playwright;
     private IBrowser? _browser;
     private IBrowserContext? _browserContext;
+    private readonly List<IStrategy> _strategies;
     public IPage? Page { get; private set; }
 
     public GameController()
     {
         _isPlaying = false;
+        _strategies = new List<IStrategy>() { new BuildAtCapStrategy() };
     }
 
     public async Task PlayGameAsync(CancellationToken cancellationToken)
@@ -35,30 +38,15 @@ internal class GameController : IDisposable
                 break;
             }
 
+            var stopwatch = Stopwatch.StartNew();
             var gameState = new GameState(Page!);
             await gameState.Initialize();
 
-            var stopwatch = Stopwatch.StartNew();
             Console.WriteLine($"Reading gamestate took {stopwatch.ElapsedMilliseconds}ms");
-            //If any resources are at cap build any building we can afford that uses that resource
-            var cappedResources = gameState.Resources.Values.Where(r => r.IsCapped);
-            foreach(var resource in cappedResources)
+
+            foreach (var strategy in _strategies)
             {
-                var buildingsThatLowerCap = gameState.Buildings.Where(b => b.Cost.ContainsKey(resource.Name) && b.Cost[resource.Name] <= resource.Amount);
-                var affordableBuildings = buildingsThatLowerCap.Where(b => b.Cost.All(c => gameState.Resources.ContainsKey(c.Key) && gameState.Resources[c.Key].Amount >= c.Value));
-                var doesNotGiveNegativeTotalIncome = affordableBuildings.Where(b => b.NegativeIncomes().All(n => gameState.Resources[n.resource].Income + n.amount >= 0));
-                //Take a random that is not null
-                var first = doesNotGiveNegativeTotalIncome.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
-                if(first != default)
-                {
-                    await first.Buy();
-                    foreach (var cost in first.Cost)
-                    {
-                        gameState.Resources[cost.Key].Amount -= cost.Value;
-                    }
-                    await DismissPopupAsync();
-                    break;
-                }
+                await strategy.Execute(gameState, this);
             }
 
             await Task.Delay(1000, cancellationToken);
@@ -136,7 +124,6 @@ internal class GameController : IDisposable
 
     public void Dispose()
     {
-        //await dispose
-        _browser?.DisposeAsync().GetAwaiter().GetResult();
+        _browser?.DisposeAsync().AsTask().GetAwaiter().GetResult();
     }
 }
