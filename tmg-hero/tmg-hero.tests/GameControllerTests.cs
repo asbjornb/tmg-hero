@@ -9,7 +9,7 @@ public class GameControllerTests
     public async Task ShouldLoadSave()
     {
         var saveGameManager = new SaveGameManager();
-        var page = await saveGameManager.OpenGameAsync(false);
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/5Mines.txt");
         await SaveGameManager.LoadSaveGame(saveData, page);
 
@@ -22,7 +22,7 @@ public class GameControllerTests
     public async Task ShouldDismissPopup()
     {
         var saveGameManager = new SaveGameManager();
-        var page = await saveGameManager.OpenGameAsync(false);
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/5Mines.txt");
         await SaveGameManager.LoadSaveGame(saveData, page);
 
@@ -48,7 +48,7 @@ public class GameControllerTests
     public async Task ShouldDismissPopupForMarket()
     {
         var saveGameManager = new SaveGameManager();
-        var page = await saveGameManager.OpenGameAsync(false);
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/CanBuildFirstMarket.txt");
         await SaveGameManager.LoadSaveGame(saveData, page);
 

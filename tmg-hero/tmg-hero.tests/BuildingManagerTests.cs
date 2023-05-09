@@ -9,7 +9,7 @@ public class BuildingManagerTests
     public async Task ShouldGetSingleBuildingByName()
     {
         var saveGameManager = new SaveGameManager();
-        var page = await saveGameManager.OpenGameAsync(false);
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/CanBuildFirstMarket.txt");
         await SaveGameManager.LoadSaveGame(saveData, page);
 

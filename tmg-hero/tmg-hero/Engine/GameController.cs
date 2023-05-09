@@ -24,7 +24,7 @@ public class GameController : IDisposable
     {
         if (Page is null)
         {
-            Page = await _saveGameManager.OpenGameAsync(false);
+            Page = await _saveGameManager.OpenGameAsync();
             //Display a dialog telling to import save before playing, then return
             await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, Page));
         }

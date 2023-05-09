@@ -8,13 +8,13 @@ internal class SaveGameManager : IDisposable
     private IBrowser? _browser;
     private IPage? _page;
 
-    public async Task<IPage> OpenGameAsync(bool headless)
+    public async Task<IPage> OpenGameAsync()
     {
         // Initialize a new Playwright instance if not already initialized
         if (_browser == null)
         {
             var playwright = await Playwright.CreateAsync();
-            _browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = headless });
+            _browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
         }
 
         if (_page is null)
