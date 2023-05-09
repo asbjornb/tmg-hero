@@ -19,7 +19,7 @@ internal class BuildAtCapStrategy : IStrategy
             var first = doesNotGiveNegativeTotalIncome.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
             if (first != default)
             {
-                await first.Buy();
+                await first.BuyAsync();
                 foreach (var cost in first.Cost)
                 {
                     gameState.Resources[cost.Key].Amount -= cost.Value;

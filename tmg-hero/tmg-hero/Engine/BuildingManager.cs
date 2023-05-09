@@ -57,4 +57,43 @@ internal class BuildingManager
 
         return buildings;
     }
+
+    public async Task<Building?> GetBuildingFromName(string buildingName)
+    {
+        // Locate the elements containing the resource information
+        var root = _page.Locator("#root div");
+        var resourceElement = root.Filter(new() { HasText = "Living Quarters" }).Nth(2);
+        var button = resourceElement.GetByRole(AriaRole.Button).GetByText(buildingName);
+
+        try
+        {
+            // Hover over the button and wait for the tooltip to appear
+            await button.HoverAsync();
+            // Wait for the Tippy.js tooltip to appear
+            await _page.WaitForSelectorAsync("[data-tippy-root]", new() { Timeout = 1000 });
+
+            var tooltipElement = await _page.QuerySelectorAsync("[data-tippy-root]");
+            if (tooltipElement == null)
+            {
+                return null;
+            }
+            var tooltipText = await tooltipElement!.InnerTextAsync();
+
+            if (!string.IsNullOrEmpty(tooltipText))
+            {
+                // Parse the building data from the tooltip text
+                var building = Building.TryParseBuildingFromTooltipText(tooltipText, button);
+                if (building != null)
+                {
+                    return building;
+                }
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Exception: " + e.ToString() + "\n When trying to find Building with Name: "+buildingName);
+        }
+        return null;
+    }
 }
