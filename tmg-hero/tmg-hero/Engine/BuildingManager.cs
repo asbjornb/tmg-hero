@@ -12,7 +12,7 @@ internal class BuildingManager
         _page = page;
     }
 
-    public async Task<List<Building>> GetBuildingDataAsync()
+    public async Task<List<Building>> GetAllBuildingsAsync()
     {
         var buildings = new List<Building>();
 
