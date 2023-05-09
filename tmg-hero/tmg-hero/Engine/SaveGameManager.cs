@@ -28,9 +28,14 @@ internal class SaveGameManager : IDisposable
         return _page;
     }
 
-    public static async Task LoadSaveGame(string saveData, IPage page)
+    public static async Task LoadSaveGame(string saveData, IPage page, bool showBuildingsAtCap = false)
     {
         await page.GetByRole(AriaRole.Banner).GetByRole(AriaRole.Button).Nth(3).ClickAsync();
+
+        if (!showBuildingsAtCap)
+        {
+            await page.Locator("#headlessui-switch-\\:r8\\:").ClickAsync();
+        }
 
         await page.ClickAsync("text=Import from clipboard");
 
