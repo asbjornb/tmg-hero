@@ -55,10 +55,25 @@ internal sealed class Resource
             return false;
         }
 
-        if (!int.TryParse(parts[0].Replace(",", ""), out amount))
+        string amountString = parts[0].Trim();
+        double amountMultiplier = 1;
+        if (amountString.EndsWith("K", StringComparison.OrdinalIgnoreCase))
+        {
+            amountMultiplier = 1000;
+            amountString = amountString.Substring(0, amountString.Length - 1);
+        }
+        else if (amountString.EndsWith("M", StringComparison.OrdinalIgnoreCase))
+        {
+            amountMultiplier = 1000000;
+            amountString = amountString.Substring(0, amountString.Length - 1);
+        }
+
+        if (!double.TryParse(amountString, NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out double amountValue))
         {
             return false;
         }
+
+        amount = (int)(amountValue * amountMultiplier);
 
         string capString = parts[1].Trim();
         double capMultiplier = 1;
@@ -67,7 +82,7 @@ internal sealed class Resource
             capMultiplier = 1000;
             capString = capString.Substring(0, capString.Length - 1);
         }
-        if (capString.EndsWith("M", StringComparison.OrdinalIgnoreCase))
+        else if (capString.EndsWith("M", StringComparison.OrdinalIgnoreCase))
         {
             capMultiplier = 1000000;
             capString = capString.Substring(0, capString.Length - 1);

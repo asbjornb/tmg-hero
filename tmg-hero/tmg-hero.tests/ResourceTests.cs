@@ -49,4 +49,15 @@ public class ResourceTests
             result.Should().NotBeNull();
         }
     }
+
+    [Test] 
+    public void ShouldParseRealExample2()
+    {
+        const string Input = "Research\t23,497 / 131.6K\t105.19/s\nGold\t33,623 / 150.1K\t208.58/s\nFood\t6,001 / 34,973\t22.68/s\nWood\t104.0K / 201.7K\t71.82/s\nStone\t19,085 / 201.7K\t64.62/s\nCopper\t126.3K / 126.3K\t48.05/s\nIron\t72,410 / 126.3K\t30.92/s\nTools\t4,426 / 128.4K\t30.62/s\nCow\t777 / 5,088\t1.2/s\nHorse\t405 / 7,082\t0.6/s\nFaith\t26,642 / 27,491\t59.84/s\nMana\t8,078 / 18,667\t19.45/s\nMaterials\t563 / 41,623\t7.45/s\nSteel\t7,846 / 43,330\t6.69/s\nCrystal\t4,004 / 34,826\t3.27/s\nSupplies\t2,255 / 27,868\t3.49/s";
+        foreach (var line in Input.Split('\n'))
+        {
+            Resource.TryParseResourceFromText(line, out Resource? result).Should().BeTrue();
+            result.Should().NotBeNull();
+        }
+    }
 }
