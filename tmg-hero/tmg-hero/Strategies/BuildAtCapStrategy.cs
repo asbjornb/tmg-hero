@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Playwright;
+using System.Diagnostics;
 using tmg_hero.Engine;
 
 namespace tmg_hero.Strategies;
 
 internal class BuildAtCapStrategy : IStrategy
 {
-    public async Task Execute(GameState gameState, GameController controller)
+    public async Task Execute(GameState gameState, IPage page)
     {
         //If any resources are at cap build any building we can afford that uses that resource
         var cappedResources = gameState.Resources.Values.Where(r => r.IsCapped);
@@ -23,7 +24,7 @@ internal class BuildAtCapStrategy : IStrategy
                 {
                     gameState.Resources[cost.Key].Amount -= cost.Value;
                 }
-                await controller.DismissPopupAsync();
+                await GameInterface.DismissPopupAsync(page);
                 break;
             }
         }
