@@ -55,45 +55,30 @@ internal sealed class Resource
             return false;
         }
 
-        string amountString = parts[0].Trim();
-        double amountMultiplier = 1;
-        if (amountString.EndsWith("K", StringComparison.OrdinalIgnoreCase))
+        return TryParseValueWithMultiplier(parts[0].Trim(), out amount) && TryParseValueWithMultiplier(parts[1].Trim(), out cap);
+    }
+
+    private static bool TryParseValueWithMultiplier(string valueString, out int value)
+    {
+        value = 0;
+        double multiplier = 1;
+        if (valueString.EndsWith("K", StringComparison.OrdinalIgnoreCase))
         {
-            amountMultiplier = 1000;
-            amountString = amountString.Substring(0, amountString.Length - 1);
+            multiplier = 1000;
+            valueString = valueString.Substring(0, valueString.Length - 1);
         }
-        else if (amountString.EndsWith("M", StringComparison.OrdinalIgnoreCase))
+        else if (valueString.EndsWith("M", StringComparison.OrdinalIgnoreCase))
         {
-            amountMultiplier = 1000000;
-            amountString = amountString.Substring(0, amountString.Length - 1);
+            multiplier = 1000000;
+            valueString = valueString.Substring(0, valueString.Length - 1);
         }
 
-        if (!double.TryParse(amountString, NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out double amountValue))
+        if (!double.TryParse(valueString, NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out double parsedValue))
         {
             return false;
         }
 
-        amount = (int)(amountValue * amountMultiplier);
-
-        string capString = parts[1].Trim();
-        double capMultiplier = 1;
-        if (capString.EndsWith("K", StringComparison.OrdinalIgnoreCase))
-        {
-            capMultiplier = 1000;
-            capString = capString.Substring(0, capString.Length - 1);
-        }
-        else if (capString.EndsWith("M", StringComparison.OrdinalIgnoreCase))
-        {
-            capMultiplier = 1000000;
-            capString = capString.Substring(0, capString.Length - 1);
-        }
-
-        if (!double.TryParse(capString, NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out double capValue))
-        {
-            return false;
-        }
-
-        cap = (int)(capValue * capMultiplier);
+        value = (int)(parsedValue * multiplier);
         return true;
     }
 }
