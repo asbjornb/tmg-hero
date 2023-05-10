@@ -34,7 +34,7 @@ internal sealed class Building
             var name = lines[0].Trim();
 
             // Parse the cost, production, and population values from the remaining lines
-            const string resourcePattern = @"(\w+)\s*((?:\+|\-)?[\d]+(?:\.\d+)?)(?:\/s)?";
+            const string resourcePattern = @"(\w+)\s*((?:\+|\-)?[\d,]+(?:\.\d+)?)(?:\/s)?";
             int? population = default;
             var cost = new Dictionary<string, int>();
             var production = new Dictionary<string, double>();
@@ -57,7 +57,7 @@ internal sealed class Building
                 if (match.Success)
                 {
                     string resourceName = match.Groups[1].Value;
-                    double value = double.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+                    double value = double.Parse(match.Groups[2].Value, NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture);
 
                     if (isCost)
                     {
@@ -100,7 +100,7 @@ internal sealed class Building
         return costResources;
     }
 
-    public async Task Buy()
+    public async Task BuyAsync()
     {
         if(_button is not null)
         {

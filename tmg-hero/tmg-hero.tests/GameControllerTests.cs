@@ -1,5 +1,4 @@
 using tmg_hero.Engine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace tmg_hero.tests;
 
@@ -9,11 +8,12 @@ public class GameControllerTests
     [Apartment(ApartmentState.STA)]
     public async Task ShouldLoadSave()
     {
-        var gameController = new GameController();
+        var saveGameManager = new SaveGameManager();
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/5Mines.txt");
-        await gameController.InjectSaveGameData(saveData, false);
+        await SaveGameManager.LoadSaveGame(saveData, page);
 
-        var result = await gameController.IsGameLoaded();
+        var result = await saveGameManager.IsGameLoaded();
         result.Should().BeTrue();
     }
 
@@ -21,20 +21,24 @@ public class GameControllerTests
     [Apartment(ApartmentState.STA)]
     public async Task ShouldDismissPopup()
     {
-        var gameController = new GameController();
+        var saveGameManager = new SaveGameManager();
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/5Mines.txt");
-        await gameController.InjectSaveGameData(saveData, false);
+        await SaveGameManager.LoadSaveGame(saveData, page);
 
-        var isLoaded = await gameController.IsGameLoaded();
-        isLoaded.Should().BeTrue();
-        var gameState = new GameState(gameController.Page!);
-        await gameState.Initialize();
-        await gameState.Buildings.First(x => x.Name == "Mine").Buy();
-        var locator = gameController.Page!.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The depths of Theresmore");
+        var result = await saveGameManager.IsGameLoaded();
+        result.Should().BeTrue();
+        
+        var manager = new BuildingManager(page);
+        var mine = await manager.GetBuildingFromName("Mine");
+        mine.Should().NotBeNull();
+        await mine!.BuyAsync();
+        var locator = page.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The depths of Theresmore");
         var numMinePopups = await locator.CountAsync();
         numMinePopups.Should().Be(1);
-        await gameController.DismissPopupAsync();
-        locator = gameController.Page!.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The depths of Theresmore");
+
+        await GameInterface.DismissPopupAsync(page);
+        locator = page.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The depths of Theresmore");
         numMinePopups = await locator.CountAsync();
         numMinePopups.Should().Be(0);
     }
@@ -43,20 +47,24 @@ public class GameControllerTests
     [Apartment(ApartmentState.STA)]
     public async Task ShouldDismissPopupForMarket()
     {
-        var gameController = new GameController();
+        var saveGameManager = new SaveGameManager();
+        var page = await saveGameManager.OpenGameAsync();
         var saveData = await File.ReadAllTextAsync("TestSaves/CanBuildFirstMarket.txt");
-        await gameController.InjectSaveGameData(saveData, false);
+        await SaveGameManager.LoadSaveGame(saveData, page);
 
-        var isLoaded = await gameController.IsGameLoaded();
-        isLoaded.Should().BeTrue();
-        var gameState = new GameState(gameController.Page!);
-        await gameState.Initialize();
-        await gameState.Buildings.First(x => x.Name == "Marketplace").Buy();
-        var locator = gameController.Page!.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The Market");
+        var result = await saveGameManager.IsGameLoaded();
+        result.Should().BeTrue();
+
+        var manager = new BuildingManager(page);
+        var market = await manager.GetBuildingFromName("Marketplace");
+        market.Should().NotBeNull();
+        await market!.BuyAsync();
+        var locator = page.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The Market");
         var numMinePopups = await locator.CountAsync();
         numMinePopups.Should().Be(1);
-        await gameController.DismissPopupAsync();
-        locator = gameController.Page!.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The Market");
+
+        await GameInterface.DismissPopupAsync(page);
+        locator = page.GetByRole(Microsoft.Playwright.AriaRole.Heading).GetByText("The Market");
         numMinePopups = await locator.CountAsync();
         numMinePopups.Should().Be(0);
     }

@@ -17,7 +17,7 @@ internal class GameState
     public async Task Initialize()
     {
         var buildingManager = new BuildingManager(_page);
-        Buildings.AddRange(await buildingManager.GetBuildingDataAsync());
+        Buildings.AddRange(await buildingManager.GetAllBuildingsAsync());
 
         var resourceManager = new ResourceManager(_page);
         var dic = await resourceManager.GetResourceDataAsync();

@@ -34,4 +34,22 @@ public class BuildingTests
         result.Production.Should().BeEmpty();
         result.Population.Should().BeNull();
     }
+
+    [Test]
+    public void ShouldParseMarket()
+    {
+        const string Input = "Marketplace\n\nFrom a small provincial market to the monopoly of entire nations\n\nGold\t1,200\nWood\t600\nCopper\t400\nIron\t400\nTools\t400\nMerchant\t+1\nMerchant gold\t+2%\nArtisan tools\t+2%\nArtisan Gold\t+2%\nGold cap\t+750\nTools cap\t+200";
+        var result = Building.TryParseBuildingFromTooltipText(Input, null);
+        result.Should().NotBeNull();
+        result!.Name.Should().Be("Marketplace");
+
+        result.Cost.Should().Contain(new KeyValuePair<string, int>("Gold", 1200));
+        result.Cost.Should().Contain(new KeyValuePair<string, int>("Wood", 600));
+        result.Cost.Should().Contain(new KeyValuePair<string, int>("Copper", 400));
+        result.Cost.Should().Contain(new KeyValuePair<string, int>("Iron", 400));
+        result.Cost.Should().Contain(new KeyValuePair<string, int>("Tools", 400));
+        result.Cost.Should().HaveCount(5);
+        result.Production.Should().BeEmpty();
+        result.Population.Should().BeNull();
+    }
 }

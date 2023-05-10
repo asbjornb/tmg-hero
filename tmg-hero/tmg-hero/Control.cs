@@ -33,6 +33,6 @@ public partial class Control : Form
 
     private void LoadSave_Click(object sender, EventArgs e)
     {
-        LoadFromSaveDialog.ShowLoadFromSaveDialog(x => _gameController.InjectSaveGameData(x));
+        LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, _gameController.Page!));
     }
 }
