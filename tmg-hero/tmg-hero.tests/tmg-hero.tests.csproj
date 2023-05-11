@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\tmg-hero\tmg-hero.csproj" />
+    <ProjectReference Include="..\tmg-hero\tmg-hero.winforms.csproj" />
   </ItemGroup>
 
   <ItemGroup>

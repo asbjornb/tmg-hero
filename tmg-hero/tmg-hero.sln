@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tmg-hero", "tmg-hero\tmg-hero.csproj", "{63475386-486F-43D2-A0B6-7565DDA3CE3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tmg-hero.winforms", "tmg-hero\tmg-hero.winforms.csproj", "{63475386-486F-43D2-A0B6-7565DDA3CE3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tmg-hero.tests", "tmg-hero.tests\tmg-hero.tests.csproj", "{AFC9CB4D-EC65-43D8-A3AF-217899A5A750}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tmg-hero.tests", "tmg-hero.tests\tmg-hero.tests.csproj", "{AFC9CB4D-EC65-43D8-A3AF-217899A5A750}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tmg-hero", "tmg-hero-core\tmg-hero.csproj", "{CE2DA316-3B85-42F4-8F7E-ABEB0BF53F15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{AFC9CB4D-EC65-43D8-A3AF-217899A5A750}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFC9CB4D-EC65-43D8-A3AF-217899A5A750}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFC9CB4D-EC65-43D8-A3AF-217899A5A750}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE2DA316-3B85-42F4-8F7E-ABEB0BF53F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE2DA316-3B85-42F4-8F7E-ABEB0BF53F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE2DA316-3B85-42F4-8F7E-ABEB0BF53F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE2DA316-3B85-42F4-8F7E-ABEB0BF53F15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
