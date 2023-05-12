@@ -1,6 +1,5 @@
 ﻿using Microsoft.Playwright;
 using System.Diagnostics;
-using tmg_hero.Dialogs;
 using tmg_hero.Strategies;
 
 namespace tmg_hero.Engine;
@@ -22,12 +21,6 @@ public class GameController : IDisposable
 
     public async Task PlayGameAsync(CancellationToken cancellationToken)
     {
-        if (Page is null)
-        {
-            Page = await _saveGameManager.OpenGameAsync();
-            //Display a dialog telling to import save before playing, then return
-            await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, Page));
-        }
         _isPlaying = true;
 
         while (_isPlaying)

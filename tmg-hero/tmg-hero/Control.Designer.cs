@@ -1,4 +1,4 @@
-﻿namespace tmg_hero
+﻿namespace tmg_hero.winforms
 {
     partial class Control
     {

@@ -2,7 +2,7 @@
 
 namespace tmg_hero.Engine;
 
-internal class SaveGameManager : IDisposable
+public class SaveGameManager : IDisposable
 {
     private const string Url = "https://www.theresmoregame.com/play/";
     private IBrowser? _browser;
@@ -40,7 +40,7 @@ internal class SaveGameManager : IDisposable
         await page.ClickAsync("text=Import from clipboard");
 
         await page.ClickAsync("text=Click here to paste a save");
-        Clipboard.SetText(saveData);
+        TextCopy.ClipboardService.SetText(saveData);
 
         await page.Keyboard.DownAsync("Control");
         await page.Keyboard.PressAsync("KeyV");

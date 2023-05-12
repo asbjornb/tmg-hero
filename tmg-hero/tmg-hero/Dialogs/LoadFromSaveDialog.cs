@@ -1,4 +1,4 @@
-﻿namespace tmg_hero.Dialogs;
+﻿namespace tmg_hero.winforms.Dialogs;
 
 internal static class LoadFromSaveDialog
 {

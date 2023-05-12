@@ -1,7 +1,8 @@
-using tmg_hero.Dialogs;
+using Microsoft.Playwright;
 using tmg_hero.Engine;
+using tmg_hero.winforms.Dialogs;
 
-namespace tmg_hero;
+namespace tmg_hero.winforms;
 
 //On stop save the current state of the game to file. Also there should be a button to get the save.
 //On start the player will need to manually load / or we could prompt for them to copy a save file and import to clipboard or supply a file path
@@ -9,16 +10,25 @@ namespace tmg_hero;
 public partial class Control : Form
 {
     private readonly GameController _gameController;
+    private readonly SaveGameManager _saveGameManager;
+    private IPage? _page;
     private CancellationTokenSource? _cancellationTokenSource;
 
     public Control()
     {
         InitializeComponent();
         _gameController = new GameController();
+        _saveGameManager = new SaveGameManager();
     }
 
     private async void PlayStop_Click(object sender, EventArgs e)
     {
+        if (_page is null)
+        {
+            _page = await _saveGameManager.OpenGameAsync();
+            //Display a dialog telling to import save before playing, then return
+            await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, _page));
+        }
         if (_cancellationTokenSource?.IsCancellationRequested == false)
         {
             _cancellationTokenSource.Cancel();
@@ -31,8 +41,9 @@ public partial class Control : Form
         }
     }
 
-    private void LoadSave_Click(object sender, EventArgs e)
+    private async void LoadSave_Click(object sender, EventArgs e)
     {
-        LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, _gameController.Page!));
+        _page ??= await _saveGameManager.OpenGameAsync();
+        await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, _page));
     }
 }
