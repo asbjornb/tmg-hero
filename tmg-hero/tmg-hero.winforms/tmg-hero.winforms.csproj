@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\tmg-hero-core\tmg-hero.csproj" />
+    <ProjectReference Include="..\tmg-hero\tmg-hero.csproj" />
   </ItemGroup>
 
 </Project>
