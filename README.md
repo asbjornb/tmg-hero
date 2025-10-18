@@ -1,10 +1,10 @@
 # TMG Hero
 
-An automated bot for playing Theresmore (theresmoregame.com), built with C# and Windows Forms.
+An automated bot for playing Theresmore (theresmoregame.com), built with C# and .NET 9.
 
 ## Overview
 
-TMG Hero is a Windows application that automates gameplay for Theresmore - an incremental strategy game where you explore and conquer a fantasy world. Using Microsoft Playwright for browser automation, it provides intelligent building management, resource tracking, and strategic decision-making to optimize your settlement's growth from village to city.
+TMG Hero is a cross-platform application that automates gameplay for Theresmore - an incremental strategy game where you explore and conquer a fantasy world. Using Microsoft Playwright for browser automation, it provides intelligent building management, resource tracking, and strategic decision-making to optimize your settlement's growth from village to city.
 
 ## Features
 
@@ -29,15 +29,14 @@ TMG Hero is a Windows application that automates gameplay for Theresmore - an in
 
 ### Technologies
 
-- **.NET 7.0** with Windows Forms
+- **.NET 9** cross-platform library
 - **Microsoft Playwright** for browser automation
-- **C# 11** with nullable reference types
-- **xUnit** for unit testing
+- **C# 12** with nullable reference types
+- **NUnit** for unit testing
 
 ## Requirements
 
-- Windows OS
-- .NET 7.0 Runtime
+- .NET 9 Runtime (Windows, Linux, or macOS)
 - Theresmore account (theresmoregame.com)
 
 ## Installation
@@ -75,6 +74,33 @@ Run the test suite:
 ```bash
 dotnet test
 ```
+
+## Development Setup
+
+### Pre-commit Hooks
+
+To ensure code quality, install git hooks that run build and tests before each commit:
+
+```bash
+./scripts/install-hooks.sh
+```
+
+This will:
+- Build the project before each commit
+- Run all tests before each commit
+- Prevent commits if build or tests fail
+
+To bypass the hook (not recommended):
+```bash
+git commit --no-verify
+```
+
+### Continuous Integration
+
+The project uses GitHub Actions for CI/CD:
+- **Pull Requests**: Automatically builds and tests on Ubuntu, Windows, and macOS
+- **Main Branch**: Runs full test suite on merge
+- **Cross-platform**: Ensures compatibility across all supported platforms
 
 ## License
 
