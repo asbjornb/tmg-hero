@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace tmg_hero.Model;
 
 //Currently simplistic building model. No supported roles, cap increases or bonuses modelled
-internal sealed class Building
+public sealed class Building
 {
     private readonly ILocator? _button;
 

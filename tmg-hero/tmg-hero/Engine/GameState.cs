@@ -3,7 +3,7 @@ using tmg_hero.Model;
 
 namespace tmg_hero.Engine;
 
-internal class GameState
+public class GameState
 {
     private readonly IPage _page;
     public List<Building> Buildings { get; } = new();

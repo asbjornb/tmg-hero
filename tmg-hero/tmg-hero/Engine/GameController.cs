@@ -11,6 +11,10 @@ public class GameController : IDisposable
     private readonly SaveGameManager _saveGameManager;
 
     public IPage? Page { get; private set; }
+    public bool IsPlaying => _isPlaying;
+
+    public event EventHandler<string>? StatusChanged;
+    public event EventHandler<GameState>? GameStateUpdated;
 
     public GameController()
     {
@@ -23,11 +27,14 @@ public class GameController : IDisposable
     {
         if (Page is null)
         {
+            StatusChanged?.Invoke(this, "Opening browser...");
             Page = await _saveGameManager.OpenGameAsync();
             if (!string.IsNullOrEmpty(saveGameData))
             {
+                StatusChanged?.Invoke(this, "Loading save data...");
                 await SaveGameManager.LoadSaveGame(saveGameData, Page);
             }
+            StatusChanged?.Invoke(this, "Game initialized successfully");
         }
     }
 
@@ -38,6 +45,7 @@ public class GameController : IDisposable
             throw new InvalidOperationException("Game not initialized. Call InitializeAsync first.");
         }
         _isPlaying = true;
+        StatusChanged?.Invoke(this, "Bot started");
 
         while (_isPlaying)
         {
@@ -53,6 +61,9 @@ public class GameController : IDisposable
 
             Console.WriteLine($"Reading gamestate took {stopwatch.ElapsedMilliseconds}ms");
 
+            // Fire the GameStateUpdated event
+            GameStateUpdated?.Invoke(this, gameState);
+
             foreach (var strategy in _strategies)
             {
                 await strategy.Execute(gameState, Page!);
@@ -65,6 +76,7 @@ public class GameController : IDisposable
     public void StopPlaying()
     {
         _isPlaying = false;
+        StatusChanged?.Invoke(this, "Bot stopped");
     }
 
     public void Dispose()

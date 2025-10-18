@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMG Hero - Control Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .control-panel {
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-running { background-color: #28a745; }
+        .status-stopped { background-color: #6c757d; }
+        .status-error { background-color: #dc3545; }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 0.375rem;
+        }
+
+        .resource-card {
+            border-left: 4px solid #007bff;
+        }
+
+        .progress-bar-custom {
+            height: 6px;
+        }
+
+        .main-content {
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .game-frame {
+            width: 100%;
+            height: calc(100vh - 60px);
+            border: none;
+            border-radius: 0.375rem;
+        }
+
+        .connection-status {
+            font-size: 0.875rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Control Panel -->
+            <div class="col-md-4 col-lg-3 control-panel">
+                <div class="p-4">
+                    <!-- Header -->
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="bi bi-robot fs-3 text-primary me-2"></i>
+                        <h1 class="h4 mb-0">TMG Hero</h1>
+                    </div>
+
+                    <!-- Connection Status -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="connection-status">
+                                    <span id="connectionStatus" class="status-indicator status-stopped"></span>
+                                    <span id="connectionText">Connecting...</span>
+                                </span>
+                                <small id="lastUpdate" class="text-muted">-</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Status -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Game Status</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <small class="text-muted">Bot Status</small>
+                                    <div id="botStatus">
+                                        <span class="status-indicator status-stopped"></span>
+                                        <span>Stopped</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Game State</small>
+                                    <div id="gameState">
+                                        <span class="status-indicator status-stopped"></span>
+                                        <span>Not Initialized</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-gear me-2"></i>Controls</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button id="initBtn" class="btn btn-outline-primary">
+                                    <i class="bi bi-play-circle me-2"></i>Initialize Game
+                                </button>
+                                <button id="startBtn" class="btn btn-success" disabled>
+                                    <i class="bi bi-play me-2"></i>Start Bot
+                                </button>
+                                <button id="stopBtn" class="btn btn-danger" disabled>
+                                    <i class="bi bi-stop me-2"></i>Stop Bot
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Management -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-save me-2"></i>Save Management</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="saveData" class="form-label">Save Data</label>
+                                <textarea id="saveData" class="form-control" rows="3"
+                                         placeholder="Paste save data here to load..."></textarea>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button id="loadSaveBtn" class="btn btn-outline-secondary">
+                                    <i class="bi bi-upload me-2"></i>Load Save
+                                </button>
+                                <button id="getSaveBtn" class="btn btn-outline-secondary" disabled>
+                                    <i class="bi bi-download me-2"></i>Get Current Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resources -->
+                    <div class="card mb-4" id="resourcesCard" style="display: none;">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-gem me-2"></i>Resources</h6>
+                        </div>
+                        <div class="card-body" id="resourcesContainer">
+                            <!-- Resources will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>Activity Log</h6>
+                            <button id="clearLogBtn" class="btn btn-sm btn-outline-secondary">Clear</button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="log" class="log-container p-3">
+                                <div class="text-muted">TMG Hero initialized. Ready to connect...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-8 col-lg-9 main-content">
+                <div class="p-4">
+                    <!-- Game Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"><i class="bi bi-controller me-2"></i>Theresmore Game</h5>
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted me-3">theresmoregame.com/play</small>
+                            <button id="openGameBtn" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Open in New Tab
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Game Frame -->
+                    <div class="card">
+                        <div class="card-body p-2">
+                            <iframe id="gameFrame" class="game-frame"
+                                   src="https://www.theresmoregame.com/play"
+                                   title="Theresmore Game">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
