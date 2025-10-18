@@ -1,5 +1,9 @@
 # TMG Hero
 
+[![CI](https://github.com/asbjornb/tmg-hero/actions/workflows/ci.yml/badge.svg)](https://github.com/asbjornb/tmg-hero/actions/workflows/ci.yml)
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/asbjornb/tmg-hero)
+
 An automated bot for playing Theresmore (theresmoregame.com), built with C# and .NET 9.
 
 ## Overview
@@ -44,18 +48,26 @@ TMG Hero is a cross-platform application that automates gameplay for Theresmore 
 1. Clone the repository:
 ```bash
 git clone https://github.com/asbjornb/tmg-hero.git
+cd tmg-hero
 ```
 
-2. Build the solution:
+2. Install development hooks (recommended):
+```bash
+./scripts/install-hooks.sh
+```
+
+3. Build the solution:
 ```bash
 cd tmg-hero/tmg-hero
 dotnet build
 ```
 
-3. Run the application:
+4. Run tests to verify setup:
 ```bash
-dotnet run --project tmg-hero/tmg-hero.csproj
+dotnet test
 ```
+
+> **Note**: TMG Hero is currently a library. A user interface will be added in future releases.
 
 ## Usage
 
