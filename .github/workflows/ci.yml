@@ -20,15 +20,12 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./tmg-hero/tmg-hero
 
     - name: Build
       run: dotnet build --no-restore --configuration Release
-      working-directory: ./tmg-hero/tmg-hero
 
     - name: Test
       run: dotnet test --no-build --configuration Release --verbosity normal
-      working-directory: ./tmg-hero/tmg-hero
 
   build-cross-platform:
     runs-on: ${{ matrix.os }}
@@ -46,8 +43,6 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./tmg-hero/tmg-hero
 
     - name: Build
       run: dotnet build --no-restore --configuration Release
-      working-directory: ./tmg-hero/tmg-hero
