@@ -1,7 +1,7 @@
 ﻿using Microsoft.Playwright;
-using tmg_hero.Engine;
+using TMG.Core.Engine;
 
-namespace tmg_hero.Strategies;
+namespace TMG.Core.Strategies;
 
 internal interface IStrategy
 {

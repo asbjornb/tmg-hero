@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace tmg_hero.Model;
+namespace TMG.Core.Model;
 
 //Currently simplistic building model. No supported roles, cap increases or bonuses modelled
 public sealed class Building

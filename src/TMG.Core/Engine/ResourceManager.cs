@@ -1,7 +1,7 @@
 ﻿using Microsoft.Playwright;
-using tmg_hero.Model;
+using TMG.Core.Model;
 
-namespace tmg_hero.Engine;
+namespace TMG.Core.Engine;
 
 public class ResourceManager
 {

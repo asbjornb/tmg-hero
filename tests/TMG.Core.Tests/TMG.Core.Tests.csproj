@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	<TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>tmg_hero.tests</RootNamespace>
+    <RootNamespace>TMG.Core.Tests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\tmg-hero\tmg-hero.csproj" />
+    <ProjectReference Include="..\..\src\TMG.Core\TMG.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

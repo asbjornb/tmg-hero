@@ -1,7 +1,7 @@
 using NUnit.Framework.Internal;
-using tmg_hero.Model;
+using TMG.Core.Model;
 
-namespace tmg_hero.tests;
+namespace TMG.Core.Tests;
 
 public class ResourceTests
 {

@@ -1,6 +1,6 @@
-using tmg_hero.Engine;
+using TMG.Core.Engine;
 
-namespace tmg_hero.tests;
+namespace TMG.Core.Tests;
 
 public class BuildingManagerTests
 {
