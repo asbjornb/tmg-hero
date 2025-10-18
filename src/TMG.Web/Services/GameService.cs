@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
-using tmg_hero.Engine;
+using TMG.Core.Engine;
+using TMG.Core.Public.DTOs;
 using TMG.Web.Hubs;
 
 namespace TMG.Web.Services;
@@ -92,18 +93,18 @@ public class GameService
         await _hubContext.Clients.All.SendAsync("StatusChanged", status);
     }
 
-    private async void OnGameStateUpdated(object? sender, GameState gameState)
+    private async void OnGameStateUpdated(object? sender, GameStateDto gameStateDto)
     {
         var update = new
         {
-            buildings = gameState.Buildings.Count,
-            resources = gameState.Resources.ToDictionary(r => r.Key, r => new
+            buildings = gameStateDto.BuildingCount,
+            resources = gameStateDto.Resources.ToDictionary(r => r.Key, r => new
             {
                 amount = r.Value.Amount,
                 cap = r.Value.Cap,
                 income = r.Value.Income
             }),
-            timestamp = DateTime.UtcNow
+            timestamp = gameStateDto.Timestamp
         };
 
         await _hubContext.Clients.All.SendAsync("GameStateUpdated", update);

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
 
-namespace tmg_hero.Engine;
+namespace TMG.Core.Engine;
 
 public static class GameInterface
 {

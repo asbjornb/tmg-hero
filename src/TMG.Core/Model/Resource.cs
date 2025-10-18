@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace tmg_hero.Model;
+namespace TMG.Core.Model;
 
 public sealed class Resource
 {

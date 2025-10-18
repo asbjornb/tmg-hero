@@ -1,8 +1,8 @@
 ﻿using Microsoft.Playwright;
 using System.Diagnostics;
-using tmg_hero.Engine;
+using TMG.Core.Engine;
 
-namespace tmg_hero.Strategies;
+namespace TMG.Core.Strategies;
 
 internal class BuildAtCapStrategy : IStrategy
 {

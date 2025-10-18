@@ -1,8 +1,9 @@
 ﻿using Microsoft.Playwright;
 using System.Diagnostics;
-using tmg_hero.Strategies;
+using TMG.Core.Strategies;
+using TMG.Core.Public.DTOs;
 
-namespace tmg_hero.Engine;
+namespace TMG.Core.Engine;
 
 public class GameController : IDisposable
 {
@@ -14,7 +15,7 @@ public class GameController : IDisposable
     public bool IsPlaying => _isPlaying;
 
     public event EventHandler<string>? StatusChanged;
-    public event EventHandler<GameState>? GameStateUpdated;
+    public event EventHandler<GameStateDto>? GameStateUpdated;
 
     public GameController()
     {
@@ -61,8 +62,9 @@ public class GameController : IDisposable
 
             Console.WriteLine($"Reading gamestate took {stopwatch.ElapsedMilliseconds}ms");
 
-            // Fire the GameStateUpdated event
-            GameStateUpdated?.Invoke(this, gameState);
+            // Convert to DTO and fire event
+            var gameStateDto = ConvertToDto(gameState);
+            GameStateUpdated?.Invoke(this, gameStateDto);
 
             foreach (var strategy in _strategies)
             {
@@ -77,6 +79,36 @@ public class GameController : IDisposable
     {
         _isPlaying = false;
         StatusChanged?.Invoke(this, "Bot stopped");
+    }
+
+    public async Task<string> GetSaveAsync()
+    {
+        if (Page == null)
+        {
+            throw new InvalidOperationException("Game not initialized.");
+        }
+
+        return await SaveGameManager.GetSaveGame(Page);
+    }
+
+    private static GameStateDto ConvertToDto(GameState gameState)
+    {
+        var resourceDtos = gameState.Resources.ToDictionary(
+            r => r.Key,
+            r => new ResourceDto
+            {
+                Name = r.Key,
+                Amount = r.Value.Amount,
+                Cap = r.Value.Cap,
+                Income = r.Value.Income
+            }
+        );
+
+        return new GameStateDto
+        {
+            BuildingCount = gameState.Buildings.Count,
+            Resources = resourceDtos
+        };
     }
 
     public void Dispose()

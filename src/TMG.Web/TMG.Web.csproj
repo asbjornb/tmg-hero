@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\tmg-hero.csproj" />
+    <ProjectReference Include="..\TMG.Core\TMG.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
