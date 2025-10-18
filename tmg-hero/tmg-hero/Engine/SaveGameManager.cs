@@ -2,7 +2,7 @@
 
 namespace tmg_hero.Engine;
 
-internal class SaveGameManager : IDisposable
+public class SaveGameManager : IDisposable
 {
     private const string Url = "https://www.theresmoregame.com/play/";
     private IBrowser? _browser;

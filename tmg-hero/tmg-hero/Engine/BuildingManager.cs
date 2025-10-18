@@ -3,7 +3,7 @@ using tmg_hero.Model;
 
 namespace tmg_hero.Engine;
 
-internal class BuildingManager
+public class BuildingManager
 {
     private readonly IPage _page;
 

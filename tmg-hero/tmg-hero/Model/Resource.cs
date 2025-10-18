@@ -2,7 +2,7 @@
 
 namespace tmg_hero.Model;
 
-internal sealed class Resource
+public sealed class Resource
 {
     private Resource(string name, int amount, int cap, double income)
     {
