@@ -1,6 +1,5 @@
 ﻿using Microsoft.Playwright;
 using System.Diagnostics;
-using tmg_hero.Dialogs;
 using tmg_hero.Strategies;
 
 namespace tmg_hero.Engine;
@@ -20,13 +19,23 @@ public class GameController : IDisposable
         _saveGameManager = new SaveGameManager();
     }
 
-    public async Task PlayGameAsync(CancellationToken cancellationToken)
+    public async Task InitializeAsync(string? saveGameData = null)
     {
         if (Page is null)
         {
             Page = await _saveGameManager.OpenGameAsync();
-            //Display a dialog telling to import save before playing, then return
-            await LoadFromSaveDialog.ShowLoadFromSaveDialog(x => SaveGameManager.LoadSaveGame(x, Page));
+            if (!string.IsNullOrEmpty(saveGameData))
+            {
+                await SaveGameManager.LoadSaveGame(saveGameData, Page);
+            }
+        }
+    }
+
+    public async Task PlayGameAsync(CancellationToken cancellationToken)
+    {
+        if (Page is null)
+        {
+            throw new InvalidOperationException("Game not initialized. Call InitializeAsync first.");
         }
         _isPlaying = true;
 

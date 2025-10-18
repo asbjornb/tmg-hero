@@ -40,7 +40,9 @@ internal class SaveGameManager : IDisposable
         await page.ClickAsync("text=Import from clipboard");
 
         await page.ClickAsync("text=Click here to paste a save");
-        Clipboard.SetText(saveData);
+
+        // Use evaluate to set clipboard data in the browser context
+        await page.EvaluateAsync($"navigator.clipboard.writeText(`{saveData}`)");
 
         await page.Keyboard.DownAsync("Control");
         await page.Keyboard.PressAsync("KeyV");
@@ -50,6 +52,16 @@ internal class SaveGameManager : IDisposable
 #pragma warning disable CS0612 // Type or member is obsolete
         await page.WaitForNavigationAsync();
 #pragma warning restore CS0612 // Type or member is obsolete
+    }
+
+    public static async Task<string> GetSaveGame(IPage page)
+    {
+        await page.GetByRole(AriaRole.Banner).GetByRole(AriaRole.Button).Nth(3).ClickAsync();
+        await page.ClickAsync("text=Export to clipboard");
+
+        // Get the save data from clipboard
+        var saveData = await page.EvaluateAsync<string>("navigator.clipboard.readText()");
+        return saveData;
     }
 
     public async Task<bool> IsGameLoaded()
