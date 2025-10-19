@@ -34,7 +34,13 @@ public class SaveGameManager : IDisposable
 
         if (!showBuildingsAtCap)
         {
-            await page.Locator("#headlessui-switch-\\:r8\\:").ClickAsync();
+            // Find the "Show buildings at cap" toggle and click it to turn it off
+            // Use text-based selector instead of dynamic ID for stability
+            // Find the text element, go to parent div, then find the switch button (which is a sibling)
+            var buildingsAtCapSwitch = page.GetByText("Show buildings at cap", new() { Exact = true })
+                .Locator("..") // Go to parent div
+                .Locator("button[role=switch]"); // Find the switch button within that div
+            await buildingsAtCapSwitch.ClickAsync();
         }
 
         await page.ClickAsync("text=Import from clipboard");
